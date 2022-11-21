@@ -27,9 +27,10 @@ import (
 // method is the entry point into this receiver's functionality, running on a
 // timer, and building metrics from metrics providers.
 type scraper struct {
+	instanceName string
 	rmp          runMetricsProvider
 	mp           metricsProvider
-	instanceName string
+	smp          sparkService
 }
 
 func (s scraper) scrape(_ context.Context) (pmetric.Metrics, error) {

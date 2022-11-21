@@ -22,18 +22,14 @@ import (
 	"github.com/signalfx/splunk-otel-collector/internal/receiver/databricksreceiver/internal/metadata"
 )
 
-// metricsProvider wraps a databricksClientInterface and provides metrics for databricks
+// metricsProvider wraps a databricksServiceIntf and provides metrics for databricks
 // endpoints.
 type metricsProvider struct {
-	dbClient databricksClientInterface
-}
-
-func newMetricsProvider(dbClient databricksClientInterface) metricsProvider {
-	return metricsProvider{dbClient: dbClient}
+	dbService databricksServiceIntf
 }
 
 func (p metricsProvider) addJobStatusMetrics(ms pmetric.MetricSlice) ([]int, error) {
-	jobs, err := p.dbClient.jobs()
+	jobs, err := p.dbService.jobs()
 	if err != nil {
 		return nil, fmt.Errorf("metricsProvider.addJobStatusMetrics(): %w", err)
 	}
@@ -81,7 +77,7 @@ func taskType(task jobTask) string {
 }
 
 func (p metricsProvider) addNumActiveRunsMetric(ms pmetric.MetricSlice) error {
-	runs, err := p.dbClient.activeJobRuns()
+	runs, err := p.dbService.activeJobRuns()
 	if err != nil {
 		return fmt.Errorf("metricsProvider.addNumActiveJobsMetric(): %w", err)
 	}

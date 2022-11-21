@@ -153,3 +153,11 @@ type state struct {
 	ResultState             string `json:"result_state,omitempty"`
 	UserCancelledOrTimedout bool   `json:"user_cancelled_or_timedout"`
 }
+
+// clusterList is a top-level type
+type clusterList struct {
+	Clusters []struct {
+		ClusterId string `json:"cluster_id"`
+		State     string `json:"state"`
+	} `json:"clusters"`
+}

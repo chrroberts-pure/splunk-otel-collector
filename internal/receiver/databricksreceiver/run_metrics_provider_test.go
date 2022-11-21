@@ -39,7 +39,7 @@ func TestRunMetricProvider(t *testing.T) {
 
 func TestRunMetricsProvider_AddJobRunDurationMetrics(t *testing.T) {
 	const ignored = 25
-	mp := newRunMetricsProvider(newDatabricksClient(&testdataClient{}, ignored))
+	mp := newRunMetricsProvider(newDatabricksService(&testdataDBClient{}, ignored))
 	ms := pmetric.NewMetricSlice()
 	err := mp.addMultiJobRunMetrics(ms, []int{288})
 	require.NoError(t, err)
@@ -106,4 +106,8 @@ func (c *fakeCompletedJobRunClient) addCompletedRun(jobID int) {
 		ExecutionDuration: 15_000 + (1000 * c.i),
 	}}, c.runs...)
 	c.i++
+}
+
+func (c *fakeCompletedJobRunClient) runningClusterIDs() ([]string, error) {
+	return nil, nil
 }

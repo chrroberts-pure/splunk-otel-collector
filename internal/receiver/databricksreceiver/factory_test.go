@@ -43,7 +43,7 @@ func TestFactory(t *testing.T) {
 
 func TestCreateReceiver(t *testing.T) {
 	ctx := context.Background()
-	f := createReceiverFunc(func(string, string, *http.Client, *zap.Logger) apiClientInterface { return &testdataClient{} })
+	f := createReceiverFunc(func(string, string, *http.Client, *zap.Logger) databricksClientIntf { return &testdataDBClient{} })
 	receiver, err := f(
 		ctx,
 		component.ReceiverCreateSettings{
@@ -69,9 +69,10 @@ func TestParseConfig(t *testing.T) {
 	cfg, err := servicetest.LoadConfigAndValidate(path.Join("testdata", "config.yaml"), factories)
 	require.NoError(t, err)
 	rcfg := cfg.Receivers[component.NewID(typeStr)].(*Config)
+	rcfg.resolveDatabricksEndpoint()
 	assert.Equal(t, "my-instance", rcfg.InstanceName)
 	assert.Equal(t, "abc123", rcfg.Token)
-	assert.Equal(t, "https://my.databricks.instance", rcfg.Endpoint)
+	assert.Equal(t, "https://adb-6396291084944509.9.azuredatabricks.net", rcfg.Endpoint)
 	duration, _ := time.ParseDuration("10s")
 	assert.Equal(t, duration, rcfg.CollectionInterval)
 }

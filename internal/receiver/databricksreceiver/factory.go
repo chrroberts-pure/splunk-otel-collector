@@ -21,6 +21,7 @@ import (
 	"time"
 
 	"go.opentelemetry.io/collector/component"
+	"go.opentelemetry.io/collector/config"
 	"go.opentelemetry.io/collector/config/confighttp"
 	"go.opentelemetry.io/collector/consumer"
 	"go.opentelemetry.io/collector/receiver/scraperhelper"
@@ -33,16 +34,8 @@ func NewFactory() component.ReceiverFactory {
 	return component.NewReceiverFactory(
 		typeStr,
 		createDefaultConfig,
-		component.WithMetricsReceiver(createReceiverFunc(newAPIClient), component.StabilityLevelAlpha),
+		component.WithMetricsReceiver(createReceiverFunc(newDatabricksClient), component.StabilityLevelAlpha),
 	)
-}
-
-type Config struct {
-	confighttp.HTTPClientSettings           `mapstructure:",squash"`
-	InstanceName                            string `mapstructure:"instance_name"`
-	Token                                   string
-	scraperhelper.ScraperControllerSettings `mapstructure:",squash"`
-	MaxResults                              int `mapstructure:"max_results"`
 }
 
 func createDefaultConfig() component.ReceiverConfig {
@@ -56,7 +49,7 @@ func createDefaultConfig() component.ReceiverConfig {
 	}
 }
 
-func createReceiverFunc(createAPIClient func(baseURL string, tok string, httpClient *http.Client, logger *zap.Logger) apiClientInterface) func(
+func createReceiverFunc(createDBClientFunc func(baseURL string, tok string, httpClient *http.Client, logger *zap.Logger) databricksClientIntf) func(
 	_ context.Context,
 	settings component.ReceiverCreateSettings,
 	cfg component.ReceiverConfig,
@@ -69,15 +62,23 @@ func createReceiverFunc(createAPIClient func(baseURL string, tok string, httpCli
 		consumer consumer.Metrics,
 	) (component.MetricsReceiver, error) {
 		dbcfg := cfg.(*Config)
+		dbcfg.resolveDatabricksEndpoint()
 		httpClient, err := dbcfg.ToClient(nil, settings.TelemetrySettings)
 		if err != nil {
 			return nil, fmt.Errorf("%s: createReceiverFunc closure: %w", typeStr, err)
 		}
-		c := newDatabricksClient(createAPIClient(dbcfg.Endpoint, dbcfg.Token, httpClient, settings.Logger), dbcfg.MaxResults)
+		dbService := newDatabricksService(createDBClientFunc(dbcfg.Endpoint, dbcfg.Token, httpClient, settings.Logger), dbcfg.MaxResults)
 		s := scraper{
 			instanceName: dbcfg.InstanceName,
-			rmp:          newRunMetricsProvider(c),
-			mp:           newMetricsProvider(c),
+			rmp:          newRunMetricsProvider(dbService),
+			mp:           metricsProvider{dbService: dbService},
+			smp: sparkService{
+				dbService:  dbService,
+				httpClient: httpClient,
+				logger:     settings.Logger,
+				orgID:      dbcfg.OrgID,
+				tok:        dbcfg.Token,
+			},
 		}
 		scrpr, err := scraperhelper.NewScraper(typeStr, s.scrape)
 		if err != nil {

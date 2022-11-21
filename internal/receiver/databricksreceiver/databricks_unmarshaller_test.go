@@ -15,26 +15,24 @@
 package databricksreceiver
 
 import (
-	"context"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
-func TestMetricsProvider_Scrape(t *testing.T) {
-	const ignored = 25
-	c := newDatabricksService(&testdataDBClient{}, ignored)
-	var dbClient databricksServiceIntf = c
-	scrpr := scraper{
-		instanceName: "my-instance",
-		mp:           metricsProvider{dbService: dbClient},
-		rmp:          newRunMetricsProvider(c),
-	}
-	metrics, err := scrpr.scrape(context.Background())
+func TestUnmarshaller(t *testing.T) {
+	u := databricksUnmarshaller{&testdataDBClient{}}
+	list, err := u.jobsList(25, 0)
 	require.NoError(t, err)
-	assert.Equal(t, 6, metrics.MetricCount())
-	attrs := metrics.ResourceMetrics().At(0).Resource().Attributes()
-	v, _ := attrs.Get("databricks.instance.name")
-	assert.Equal(t, "my-instance", v.Str())
+	assert.Equal(t, 2, len(list.Jobs))
+	activeRuns, err := u.activeJobRuns(25, 0)
+	require.NoError(t, err)
+	assert.Equal(t, 2, len(activeRuns.Runs))
+	completedRuns, err := u.completedJobRuns(288, 25, 0)
+	require.NoError(t, err)
+	assert.Equal(t, "SUCCESS", completedRuns.Runs[0].State.ResultState)
+	cl, err := u.clusterList()
+	require.NoError(t, err)
+	assert.Equal(t, 2, len(cl.Clusters))
 }

@@ -24,7 +24,8 @@ import (
 
 func TestMetricsProvider(t *testing.T) {
 	const ignored = 25
-	mp := newMetricsProvider(newDatabricksClient(&testdataClient{}, ignored))
+	var dbClient databricksServiceIntf = newDatabricksService(&testdataDBClient{}, ignored)
+	mp := metricsProvider{dbService: dbClient}
 	ms := pmetric.NewMetricSlice()
 	_, err := mp.addJobStatusMetrics(ms)
 	require.NoError(t, err)
