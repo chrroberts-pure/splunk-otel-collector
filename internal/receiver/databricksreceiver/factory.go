@@ -26,6 +26,8 @@ import (
 	"go.opentelemetry.io/collector/consumer"
 	"go.opentelemetry.io/collector/receiver/scraperhelper"
 	"go.uber.org/zap"
+
+	"github.com/signalfx/splunk-otel-collector/internal/receiver/databricksreceiver/internal/metadata"
 )
 
 const typeStr = "databricks"
@@ -63,6 +65,7 @@ func createReceiverFunc(createDBClientFunc func(baseURL string, tok string, http
 	) (component.MetricsReceiver, error) {
 		dbcfg := cfg.(*Config)
 		dbcfg.resolveDatabricksEndpoint()
+
 		httpClient, err := dbcfg.ToClient(nil, settings.TelemetrySettings)
 		if err != nil {
 			return nil, fmt.Errorf("%s: createReceiverFunc closure: %w", typeStr, err)
@@ -70,6 +73,7 @@ func createReceiverFunc(createDBClientFunc func(baseURL string, tok string, http
 		dbService := newDatabricksService(createDBClientFunc(dbcfg.Endpoint, dbcfg.Token, httpClient, settings.Logger), dbcfg.MaxResults)
 		s := scraper{
 			instanceName: dbcfg.InstanceName,
+			builder:      metadata.NewMetricsBuilder(dbcfg.Metrics, settings.BuildInfo),
 			rmp:          newRunMetricsProvider(dbService),
 			mp:           metricsProvider{dbService: dbService},
 			smp: sparkService{

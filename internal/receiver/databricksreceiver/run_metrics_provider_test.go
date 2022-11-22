@@ -25,12 +25,12 @@ import (
 func TestRunMetricProvider(t *testing.T) {
 	p := newRunMetricsProvider(&fakeCompletedJobRunClient{})
 	jobPts := pmetric.NewNumberDataPointSlice()
-	err := p.addSingleJobRunMetrics(jobPts, pmetric.NewNumberDataPointSlice(), 42)
+	err := p.addSingleJobRunMetrics(42, nil, 0)
 	require.NoError(t, err)
 	assert.Equal(t, 0, jobPts.Len())
 
 	jobPts = pmetric.NewNumberDataPointSlice()
-	err = p.addSingleJobRunMetrics(jobPts, pmetric.NewNumberDataPointSlice(), 42)
+	err = p.addSingleJobRunMetrics(42, nil, 0)
 	require.NoError(t, err)
 	assert.Equal(t, 1, jobPts.Len())
 	pt := jobPts.At(0)
@@ -41,7 +41,7 @@ func TestRunMetricsProvider_AddJobRunDurationMetrics(t *testing.T) {
 	const ignored = 25
 	mp := newRunMetricsProvider(newDatabricksService(&testdataDBClient{}, ignored))
 	ms := pmetric.NewMetricSlice()
-	err := mp.addMultiJobRunMetrics(ms, []int{288})
+	err := mp.addMultiJobRunMetrics([]int{288}, nil, 0)
 	require.NoError(t, err)
 	jobMetric := ms.At(0)
 	assert.Equal(t, 0, jobMetric.Gauge().DataPoints().Len())
@@ -49,7 +49,7 @@ func TestRunMetricsProvider_AddJobRunDurationMetrics(t *testing.T) {
 	assert.Equal(t, 0, taskMetric.Gauge().DataPoints().Len())
 
 	ms = pmetric.NewMetricSlice()
-	err = mp.addMultiJobRunMetrics(ms, []int{288})
+	err = mp.addMultiJobRunMetrics([]int{288}, nil, 0)
 	require.NoError(t, err)
 	jobMetric = ms.At(0)
 	assert.Equal(t, 1, jobMetric.Gauge().DataPoints().Len())

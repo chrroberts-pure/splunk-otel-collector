@@ -4,6 +4,7 @@ attributes:
     description: The name of the Databricks instance as defined by the value of the "instance_name" field in the config
   job_id:
     description: The numeric ID of the Databricks job
+    type: int
   task_id:
     description: The name of the Databricks task
   task_type:

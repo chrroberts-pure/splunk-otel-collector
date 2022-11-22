@@ -17,7 +17,7 @@ package databricksreceiver
 import (
 	"fmt"
 
-	"go.opentelemetry.io/collector/pdata/pmetric"
+	"go.opentelemetry.io/collector/pdata/pcommon"
 
 	"github.com/signalfx/splunk-otel-collector/internal/receiver/databricksreceiver/internal/metadata"
 )
@@ -28,68 +28,55 @@ type metricsProvider struct {
 	dbService databricksServiceIntf
 }
 
-func (p metricsProvider) addJobStatusMetrics(ms pmetric.MetricSlice) ([]int, error) {
+func (p metricsProvider) addJobStatusMetrics(builder *metadata.MetricsBuilder, ts pcommon.Timestamp) ([]int, error) {
 	jobs, err := p.dbService.jobs()
 	if err != nil {
 		return nil, fmt.Errorf("metricsProvider.addJobStatusMetrics(): %w", err)
 	}
-
-	initGauge(ms, metadata.M.DatabricksJobsTotal).AppendEmpty().SetIntValue(int64(len(jobs)))
-
-	jobPts := initGauge(ms, metadata.M.DatabricksJobsScheduleStatus)
-	taskPts := initGauge(ms, metadata.M.DatabricksTasksScheduleStatus)
+	builder.RecordDatabricksJobsTotalDataPoint(ts, int64(len(jobs)))
 
 	var jobIDs []int
 	for _, j := range jobs {
-		jobIDs = append(jobIDs, j.JobID)
-		jobPt := jobPts.AppendEmpty()
 		pauseStatus := pauseStatusToInt(j.Settings.Schedule.PauseStatus)
-		jobPt.SetIntValue(pauseStatus)
-		jobPt.Attributes().PutInt(metadata.A.JobID, int64(j.JobID))
+		builder.RecordDatabricksJobsScheduleStatusDataPoint(ts, pauseStatus, int64(j.JobID))
 		for _, task := range j.Settings.Tasks {
-			taskPt := taskPts.AppendEmpty()
-			taskPt.SetIntValue(pauseStatus)
-			taskAttrs := taskPt.Attributes()
-			taskAttrs.PutInt(metadata.A.JobID, int64(j.JobID))
-			taskAttrs.PutStr(metadata.A.TaskID, task.TaskKey)
-			taskAttrs.PutStr(metadata.A.TaskType, taskType(task))
+			builder.RecordDatabricksTasksScheduleStatusDataPoint(
+				ts,
+				pauseStatus,
+				int64(j.JobID),
+				task.TaskKey,
+				taskType(task),
+			)
 		}
 	}
 	return jobIDs, nil
 }
 
-func taskType(task jobTask) string {
+func taskType(task jobTask) metadata.AttributeTaskType {
 	switch {
 	case task.NotebookTask != nil:
-		return metadata.AttributeTaskType.NotebookTask
+		return metadata.AttributeTaskTypeNotebookTask
 	case task.SparkJarTask != nil:
-		return metadata.AttributeTaskType.SparkJarTask
+		return metadata.AttributeTaskTypeSparkJarTask
 	case task.SparkPythonTask != nil:
-		return metadata.AttributeTaskType.SparkPythonTask
+		return metadata.AttributeTaskTypeSparkPythonTask
 	case task.PipelineTask != nil:
-		return metadata.AttributeTaskType.PipelineTask
+		return metadata.AttributeTaskTypePipelineTask
 	case task.PythonWheelTask != nil:
-		return metadata.AttributeTaskType.PythonWheelTask
+		return metadata.AttributeTaskTypePythonWheelTask
 	case task.SparkSubmitTask != nil:
-		return metadata.AttributeTaskType.SparkSubmitTask
+		return metadata.AttributeTaskTypeSparkSubmitTask
 	}
-	return ""
+	return 0
 }
 
-func (p metricsProvider) addNumActiveRunsMetric(ms pmetric.MetricSlice) error {
+func (p metricsProvider) addNumActiveRunsMetric(builder *metadata.MetricsBuilder, ts pcommon.Timestamp) error {
 	runs, err := p.dbService.activeJobRuns()
 	if err != nil {
 		return fmt.Errorf("metricsProvider.addNumActiveJobsMetric(): %w", err)
 	}
-	pts := initGauge(ms, metadata.M.DatabricksJobsActiveTotal)
-	pts.AppendEmpty().SetIntValue(int64(len(runs)))
+	builder.RecordDatabricksJobsActiveTotalDataPoint(ts, int64(len(runs)))
 	return nil
-}
-
-func initGauge(ms pmetric.MetricSlice, mi metadata.MetricIntf) pmetric.NumberDataPointSlice {
-	m := ms.AppendEmpty()
-	mi.Init(m)
-	return m.Gauge().DataPoints()
 }
 
 func pauseStatusToInt(ps string) int64 {

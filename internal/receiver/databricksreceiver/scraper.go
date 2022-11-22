@@ -17,7 +17,9 @@ package databricksreceiver
 import (
 	"context"
 	"fmt"
+	"time"
 
+	"go.opentelemetry.io/collector/pdata/pcommon"
 	"go.opentelemetry.io/collector/pdata/pmetric"
 
 	"github.com/signalfx/splunk-otel-collector/internal/receiver/databricksreceiver/internal/metadata"
@@ -31,34 +33,29 @@ type scraper struct {
 	rmp          runMetricsProvider
 	mp           metricsProvider
 	smp          sparkService
+	builder      *metadata.MetricsBuilder
 }
 
 func (s scraper) scrape(_ context.Context) (pmetric.Metrics, error) {
-	out := pmetric.NewMetrics()
-	rms := out.ResourceMetrics()
-	rm := rms.AppendEmpty()
-	rm.Resource().Attributes().PutStr(metadata.A.DatabricksInstanceName, s.instanceName)
-	ilms := rm.ScopeMetrics()
-	ilm := ilms.AppendEmpty()
-	ms := ilm.Metrics()
-
 	const errfmt = "scraper.scrape(): %w"
 	var err error
 
-	jobIDs, err := s.mp.addJobStatusMetrics(ms)
+	ts := pcommon.NewTimestampFromTime(time.Now())
+
+	jobIDs, err := s.mp.addJobStatusMetrics(s.builder, ts)
 	if err != nil {
-		return out, fmt.Errorf(errfmt, err)
+		return pmetric.Metrics{}, fmt.Errorf(errfmt, err)
 	}
 
-	err = s.mp.addNumActiveRunsMetric(ms)
+	err = s.mp.addNumActiveRunsMetric(s.builder, ts)
 	if err != nil {
-		return out, fmt.Errorf(errfmt, err)
+		return pmetric.Metrics{}, fmt.Errorf(errfmt, err)
 	}
 
-	err = s.rmp.addMultiJobRunMetrics(ms, jobIDs)
+	err = s.rmp.addMultiJobRunMetrics(jobIDs, s.builder, ts)
 	if err != nil {
-		return out, fmt.Errorf(errfmt, err)
+		return pmetric.Metrics{}, fmt.Errorf(errfmt, err)
 	}
 
-	return out, err
+	return s.builder.Emit(), err
 }

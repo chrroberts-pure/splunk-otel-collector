@@ -8,18 +8,27 @@ These are the metrics available for this scraper.
 
 | Name | Description | Unit | Type | Attributes |
 | ---- | ----------- | ---- | ---- | ---------- |
-| databricks.jobs.active.total | A snapshot of the number of active jobs taken at each scrape | {jobs} | Gauge(Int) | <ul> </ul> |
-| databricks.jobs.run.duration | The execution duration in milliseconds per completed job | ms | Gauge(Int) | <ul> <li>job_id</li> </ul> |
-| databricks.jobs.schedule.status | A snapshot of the pause/run status per job taken at each scrape 0=PAUSED, 1=UNPAUSED, 2=NOT_SCHEDULED  | {status} | Gauge(Int) | <ul> <li>job_id</li> </ul> |
-| databricks.jobs.total | A snapshot of the total number of jobs registered in the Databricks instance taken at each scrape | {jobs} | Gauge(Int) | <ul> </ul> |
-| databricks.tasks.run.duration | The execution duration in milliseconds per completed task | ms | Gauge(Int) | <ul> <li>job_id</li> <li>task_id</li> </ul> |
-| databricks.tasks.schedule.status | A snapshot of the pause/run status per task taken at each scrape 0=PAUSED, 1=UNPAUSED, 2=NOT_SCHEDULED  | {status} | Gauge(Int) | <ul> <li>job_id</li> <li>task_id</li> <li>task_type</li> </ul> |
+| **databricks.jobs.active.total** | A snapshot of the number of active jobs taken at each scrape | {jobs} | Gauge(Int) | <ul> </ul> |
+| **databricks.jobs.run.duration** | The execution duration in milliseconds per completed job | ms | Gauge(Int) | <ul> <li>job_id</li> </ul> |
+| **databricks.jobs.schedule.status** | A snapshot of the pause/run status per job taken at each scrape 0=PAUSED, 1=UNPAUSED, 2=NOT_SCHEDULED | {status} | Gauge(Int) | <ul> <li>job_id</li> </ul> |
+| **databricks.jobs.total** | A snapshot of the total number of jobs registered in the Databricks instance taken at each scrape | {jobs} | Gauge(Int) | <ul> </ul> |
+| **databricks.tasks.run.duration** | The execution duration in milliseconds per completed task | ms | Gauge(Int) | <ul> <li>job_id</li> <li>task_id</li> </ul> |
+| **databricks.tasks.schedule.status** | A snapshot of the pause/run status per task taken at each scrape 0=PAUSED, 1=UNPAUSED, 2=NOT_SCHEDULED | {status} | Gauge(Int) | <ul> <li>job_id</li> <li>task_id</li> <li>task_type</li> </ul> |
 
-## Attributes
+**Highlighted metrics** are emitted by default. Other metrics are optional and not emitted by default.
+Any metric can be enabled or disabled with the following scraper configuration:
 
-| Name | Description |
-| ---- | ----------- |
-| databricks.instance.name | The name of the Databricks instance as defined by the value of the "instance_name" field in the config |
-| job_id | The numeric ID of the Databricks job |
-| task_id | The name of the Databricks task |
-| task_type | The type of the Databricks task |
+```yaml
+metrics:
+  <metric_name>:
+    enabled: <true|false>
+```
+
+## Metric attributes
+
+| Name | Description | Values |
+| ---- | ----------- | ------ |
+| databricks.instance.name | The name of the Databricks instance as defined by the value of the "instance_name" field in the config |  |
+| job_id | The numeric ID of the Databricks job |  |
+| task_id | The name of the Databricks task |  |
+| task_type | The type of the Databricks task | NotebookTask, SparkJarTask, SparkPythonTask, PipelineTask, PythonWheelTask, SparkSubmitTask |

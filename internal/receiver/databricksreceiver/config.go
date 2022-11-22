@@ -20,9 +20,12 @@ import (
 
 	"go.opentelemetry.io/collector/config/confighttp"
 	"go.opentelemetry.io/collector/receiver/scraperhelper"
+
+	"github.com/signalfx/splunk-otel-collector/internal/receiver/databricksreceiver/internal/metadata"
 )
 
 type Config struct {
+	Metrics                                 metadata.MetricsSettings `mapstructure:"metrics"`
 	scraperhelper.ScraperControllerSettings `mapstructure:",squash"`
 	confighttp.HTTPClientSettings           `mapstructure:",squash"`
 	OrgID                                   string `mapstructure:"org_id"`

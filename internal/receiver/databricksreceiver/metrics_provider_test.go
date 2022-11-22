@@ -19,56 +19,149 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/pdata/pmetric"
+
+	"github.com/signalfx/splunk-otel-collector/internal/receiver/databricksreceiver/internal/metadata"
 )
 
 func TestMetricsProvider(t *testing.T) {
 	const ignored = 25
 	var dbClient databricksServiceIntf = newDatabricksService(&testdataDBClient{}, ignored)
 	mp := metricsProvider{dbService: dbClient}
-	ms := pmetric.NewMetricSlice()
-	_, err := mp.addJobStatusMetrics(ms)
-	require.NoError(t, err)
-	assert.Equal(t, ms.Len(), 3)
 
-	jobTotalMetrics := ms.At(0)
-	assert.Equal(t, "databricks.jobs.total", jobTotalMetrics.Name())
+	mst := metadata.MetricSettings{Enabled: true}
+	builder := metadata.NewMetricsBuilder(metadata.MetricsSettings{
+		DatabricksJobsActiveTotal:     mst,
+		DatabricksJobsRunDuration:     mst,
+		DatabricksJobsScheduleStatus:  mst,
+		DatabricksJobsTotal:           mst,
+		DatabricksTasksRunDuration:    mst,
+		DatabricksTasksScheduleStatus: mst,
+	}, component.BuildInfo{})
+	_, err := mp.addJobStatusMetrics(builder, 0)
+	require.NoError(t, err)
+	emitted := builder.Emit()
+	assert.Equal(t, 3, emitted.MetricCount())
+
+	rms := emitted.ResourceMetrics()
+	assert.Equal(t, 1, rms.Len())
+	rm := rms.At(0)
+	sms := rm.ScopeMetrics()
+	assert.Equal(t, 1, sms.Len())
+	ms := sms.At(0).Metrics()
+
+	metricMap := metricsByName(ms)
+
+	const dbjt = "databricks.jobs.total"
+	jobTotalMetrics := metricMap[dbjt]
+	assert.Equal(t, dbjt, jobTotalMetrics.Name())
 	assert.EqualValues(t, 6, jobTotalMetrics.Gauge().DataPoints().At(0).IntValue())
 
-	jobScheduleMetrics := ms.At(1)
-	assert.Equal(t, "databricks.jobs.schedule.status", jobScheduleMetrics.Name())
+	const dbjss = "databricks.jobs.schedule.status"
+	jobScheduleMetrics := metricMap[dbjss]
+	assert.Equal(t, dbjss, jobScheduleMetrics.Name())
 	pts := jobScheduleMetrics.Gauge().DataPoints()
 	assert.Equal(t, 6, pts.Len())
 	assert.EqualValues(t, 0, pts.At(0).IntValue())
 
-	taskStatusMetric := ms.At(2)
-	assert.Equal(t, "databricks.tasks.schedule.status", taskStatusMetric.Name())
+	const dbtss = "databricks.tasks.schedule.status"
+	taskStatusMetric := metricMap[dbtss]
+	assert.Equal(t, dbtss, taskStatusMetric.Name())
 	taskPts := taskStatusMetric.Gauge().DataPoints()
 	assert.Equal(t, 8, taskPts.Len())
 
-	task0Pt := taskPts.At(0)
-	taskAttrs := task0Pt.Attributes()
-	jobIDAttr, _ := taskAttrs.Get("job_id")
-	assert.EqualValues(t, 7, jobIDAttr.Int())
-	taskIDAttr, _ := taskAttrs.Get("task_id")
-	assert.EqualValues(t, "user2test", taskIDAttr.Str())
+	taskMap := tasksToMap(taskPts)
 
-	assertTaskTypeEquals(t, taskPts, 0, "NotebookTask")
-	assertTaskTypeEquals(t, taskPts, 1, "SparkPythonTask")
-	assertTaskTypeEquals(t, taskPts, 2, "SparkJarTask")
-	assertTaskTypeEquals(t, taskPts, 3, "PipelineTask")
-	assertTaskTypeEquals(t, taskPts, 4, "PythonWheelTask")
-	assertTaskTypeEquals(t, taskPts, 5, "SparkSubmitTask")
+	job7Tasks := taskMap[7]
+	{
+		pt := job7Tasks["user2test"]
+		taskAttrs := pt.Attributes()
+		jobIDAttr, _ := taskAttrs.Get("job_id")
+		assert.EqualValues(t, 7, jobIDAttr.Int())
+		taskIDAttr, _ := taskAttrs.Get("task_id")
+		assert.EqualValues(t, "user2test", taskIDAttr.Str())
+		taskTypeAttr, _ := taskAttrs.Get("task_type")
+		assert.Equal(t, "NotebookTask", taskTypeAttr.Str())
+	}
+	{
+		pt := job7Tasks["multi"]
+		taskAttrs := pt.Attributes()
+		taskTypeAttr, _ := taskAttrs.Get("task_type")
+		assert.Equal(t, "SparkPythonTask", taskTypeAttr.Str())
+	}
 
-	ms = pmetric.NewMetricSlice()
-	err = mp.addNumActiveRunsMetric(ms)
+	{
+		job102Tasks := taskMap[102]
+		pt := job102Tasks["test"]
+		taskAttrs := pt.Attributes()
+		taskTypeAttr, _ := taskAttrs.Get("task_type")
+		assert.Equal(t, "SparkJarTask", taskTypeAttr.Str())
+	}
+
+	{
+		job179Tasks := taskMap[179]
+		pt := job179Tasks["singletask"]
+		taskAttrs := pt.Attributes()
+		taskTypeAttr, _ := taskAttrs.Get("task_type")
+		assert.Equal(t, "PipelineTask", taskTypeAttr.Str())
+	}
+
+	job248Tasks := taskMap[248]
+	{
+		pt := job248Tasks["dash"]
+		taskAttrs := pt.Attributes()
+		taskTypeAttr, _ := taskAttrs.Get("task_type")
+		assert.Equal(t, "PythonWheelTask", taskTypeAttr.Str())
+	}
+	{
+		pt := job248Tasks["user2test"]
+		taskAttrs := pt.Attributes()
+		taskTypeAttr, _ := taskAttrs.Get("task_type")
+		assert.Equal(t, "SparkSubmitTask", taskTypeAttr.Str())
+	}
+
+	err = mp.addNumActiveRunsMetric(builder, 0)
 	require.NoError(t, err)
+
+	emitted = builder.Emit()
+	rms = emitted.ResourceMetrics()
+	assert.Equal(t, 1, rms.Len())
+
+	assert.Equal(t, 1, rms.Len())
+	rm = rms.At(0)
+	sms = rm.ScopeMetrics()
+	assert.Equal(t, 1, sms.Len())
+	ms = sms.At(0).Metrics()
+
 	activeRunsMetric := ms.At(0)
 	assert.Equal(t, "databricks.jobs.active.total", activeRunsMetric.Name())
 	assert.Equal(t, 1, activeRunsMetric.Gauge().DataPoints().Len())
 }
 
-func assertTaskTypeEquals(t *testing.T, taskPts pmetric.NumberDataPointSlice, idx int, expected string) {
-	tskType, _ := taskPts.At(idx).Attributes().Get("task_type")
-	assert.EqualValues(t, expected, tskType.Str())
+func metricsByName(ms pmetric.MetricSlice) map[string]pmetric.Metric {
+	out := map[string]pmetric.Metric{}
+	for i := 0; i < ms.Len(); i++ {
+		metric := ms.At(i)
+		out[metric.Name()] = metric
+	}
+	return out
+}
+
+func tasksToMap(tasks pmetric.NumberDataPointSlice) map[int64]map[string]pmetric.NumberDataPoint {
+	jobMap := map[int64]map[string]pmetric.NumberDataPoint{}
+	for i := 0; i < tasks.Len(); i++ {
+		task := tasks.At(i)
+		attrs := task.Attributes()
+		jobIDAttr, _ := attrs.Get("job_id")
+		jobID := jobIDAttr.Int()
+		taskMap, ok := jobMap[jobID]
+		if !ok {
+			taskMap = map[string]pmetric.NumberDataPoint{}
+			jobMap[jobID] = taskMap
+		}
+		taskIDAttr, _ := attrs.Get("task_id")
+		taskMap[taskIDAttr.Str()] = task
+	}
+	return jobMap
 }
