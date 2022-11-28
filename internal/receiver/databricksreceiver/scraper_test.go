@@ -20,6 +20,8 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/signalfx/splunk-otel-collector/internal/receiver/databricksreceiver/internal/metadata"
 )
 
 func TestMetricsProvider_Scrape(t *testing.T) {
@@ -27,10 +29,10 @@ func TestMetricsProvider_Scrape(t *testing.T) {
 	c := newDatabricksService(&testdataDBClient{}, ignored)
 	var dbClient databricksServiceIntf = c
 	scrpr := scraper{
-		instanceName: "my-instance",
-		mp:           metricsProvider{dbService: dbClient},
-		rmp:          newRunMetricsProvider(c),
-		builder:      newTestMetricsBuilder(),
+		resourceOpt: metadata.WithDatabricksInstanceName("my-instance"),
+		builder:     newTestMetricsBuilder(),
+		rmp:         newRunMetricsProvider(c),
+		mp:          metricsProvider{dbService: dbClient},
 	}
 	metrics, err := scrpr.scrape(context.Background())
 	require.NoError(t, err)

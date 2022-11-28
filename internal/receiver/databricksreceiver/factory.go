@@ -72,11 +72,11 @@ func createReceiverFunc(createDBClientFunc func(baseURL string, tok string, http
 		}
 		dbService := newDatabricksService(createDBClientFunc(dbcfg.Endpoint, dbcfg.Token, httpClient, settings.Logger), dbcfg.MaxResults)
 		s := scraper{
-			instanceName: dbcfg.InstanceName,
-			builder:      metadata.NewMetricsBuilder(dbcfg.Metrics, settings.BuildInfo),
-			rmp:          newRunMetricsProvider(dbService),
-			mp:           metricsProvider{dbService: dbService},
-			smp: sparkService{
+			resourceOpt: metadata.WithDatabricksInstanceName(dbcfg.InstanceName),
+			builder:     metadata.NewMetricsBuilder(dbcfg.Metrics, settings.BuildInfo),
+			rmp:         newRunMetricsProvider(dbService),
+			mp:          metricsProvider{dbService: dbService},
+			ssvc: sparkService{
 				dbService:  dbService,
 				httpClient: httpClient,
 				logger:     settings.Logger,

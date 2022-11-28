@@ -24,11 +24,16 @@ metrics:
     enabled: <true|false>
 ```
 
+## Resource attributes
+
+| Name | Description | Type |
+| ---- | ----------- | ---- |
+| databricks.instance.name | The name of the Databricks instance as defined by the value of the "instance_name" field in the config | Str |
+
 ## Metric attributes
 
 | Name | Description | Values |
 | ---- | ----------- | ------ |
-| databricks.instance.name | The name of the Databricks instance as defined by the value of the "instance_name" field in the config |  |
 | job_id | The numeric ID of the Databricks job |  |
 | task_id | The name of the Databricks task |  |
 | task_type | The type of the Databricks task | NotebookTask, SparkJarTask, SparkPythonTask, PipelineTask, PythonWheelTask, SparkSubmitTask |

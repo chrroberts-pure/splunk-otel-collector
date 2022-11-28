@@ -29,11 +29,11 @@ import (
 // method is the entry point into this receiver's functionality, running on a
 // timer, and building metrics from metrics providers.
 type scraper struct {
-	instanceName string
-	rmp          runMetricsProvider
-	mp           metricsProvider
-	smp          sparkService
-	builder      *metadata.MetricsBuilder
+	rmp         runMetricsProvider
+	mp          metricsProvider
+	ssvc        sparkService
+	builder     *metadata.MetricsBuilder
+	resourceOpt metadata.ResourceMetricsOption
 }
 
 func (s scraper) scrape(_ context.Context) (pmetric.Metrics, error) {
@@ -57,7 +57,5 @@ func (s scraper) scrape(_ context.Context) (pmetric.Metrics, error) {
 		return pmetric.Metrics{}, fmt.Errorf(errfmt, err)
 	}
 
-	metrics := s.builder.Emit()
-	metrics.ResourceMetrics().At(0).Resource().Attributes().PutStr("databricks.instance.name", s.instanceName)
-	return metrics, err
+	return s.builder.Emit(s.resourceOpt), nil
 }

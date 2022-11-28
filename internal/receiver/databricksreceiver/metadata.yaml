@@ -1,7 +1,9 @@
 name: databricksreceiver
-attributes:
+resource_attributes:
   databricks.instance.name:
     description: The name of the Databricks instance as defined by the value of the "instance_name" field in the config
+    type: string
+attributes:
   job_id:
     description: The numeric ID of the Databricks job
     type: int
