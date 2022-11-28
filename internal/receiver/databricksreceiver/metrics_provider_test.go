@@ -30,15 +30,7 @@ func TestMetricsProvider(t *testing.T) {
 	var dbClient databricksServiceIntf = newDatabricksService(&testdataDBClient{}, ignored)
 	mp := metricsProvider{dbService: dbClient}
 
-	mst := metadata.MetricSettings{Enabled: true}
-	builder := metadata.NewMetricsBuilder(metadata.MetricsSettings{
-		DatabricksJobsActiveTotal:     mst,
-		DatabricksJobsRunDuration:     mst,
-		DatabricksJobsScheduleStatus:  mst,
-		DatabricksJobsTotal:           mst,
-		DatabricksTasksRunDuration:    mst,
-		DatabricksTasksScheduleStatus: mst,
-	}, component.BuildInfo{})
+	builder := newTestMetricsBuilder()
 	_, err := mp.addJobStatusMetrics(builder, 0)
 	require.NoError(t, err)
 	emitted := builder.Emit()
@@ -137,6 +129,19 @@ func TestMetricsProvider(t *testing.T) {
 	activeRunsMetric := ms.At(0)
 	assert.Equal(t, "databricks.jobs.active.total", activeRunsMetric.Name())
 	assert.Equal(t, 1, activeRunsMetric.Gauge().DataPoints().Len())
+}
+
+func newTestMetricsBuilder() *metadata.MetricsBuilder {
+	mst := metadata.MetricSettings{Enabled: true}
+	builder := metadata.NewMetricsBuilder(metadata.MetricsSettings{
+		DatabricksJobsActiveTotal:     mst,
+		DatabricksJobsRunDuration:     mst,
+		DatabricksJobsScheduleStatus:  mst,
+		DatabricksJobsTotal:           mst,
+		DatabricksTasksRunDuration:    mst,
+		DatabricksTasksScheduleStatus: mst,
+	}, component.BuildInfo{})
+	return builder
 }
 
 func metricsByName(ms pmetric.MetricSlice) map[string]pmetric.Metric {

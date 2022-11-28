@@ -30,10 +30,11 @@ func TestMetricsProvider_Scrape(t *testing.T) {
 		instanceName: "my-instance",
 		mp:           metricsProvider{dbService: dbClient},
 		rmp:          newRunMetricsProvider(c),
+		builder:      newTestMetricsBuilder(),
 	}
 	metrics, err := scrpr.scrape(context.Background())
 	require.NoError(t, err)
-	assert.Equal(t, 6, metrics.MetricCount())
+	assert.Equal(t, 4, metrics.MetricCount())
 	attrs := metrics.ResourceMetrics().At(0).Resource().Attributes()
 	v, _ := attrs.Get("databricks.instance.name")
 	assert.Equal(t, "my-instance", v.Str())

@@ -37,6 +37,7 @@ func (p metricsProvider) addJobStatusMetrics(builder *metadata.MetricsBuilder, t
 
 	var jobIDs []int
 	for _, j := range jobs {
+		jobIDs = append(jobIDs, j.JobID)
 		pauseStatus := pauseStatusToInt(j.Settings.Schedule.PauseStatus)
 		builder.RecordDatabricksJobsScheduleStatusDataPoint(ts, pauseStatus, int64(j.JobID))
 		for _, task := range j.Settings.Tasks {

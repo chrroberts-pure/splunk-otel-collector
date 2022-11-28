@@ -40,19 +40,19 @@ func (s scraper) scrape(_ context.Context) (pmetric.Metrics, error) {
 	const errfmt = "scraper.scrape(): %w"
 	var err error
 
-	ts := pcommon.NewTimestampFromTime(time.Now())
+	now := pcommon.NewTimestampFromTime(time.Now())
 
-	jobIDs, err := s.mp.addJobStatusMetrics(s.builder, ts)
+	jobIDs, err := s.mp.addJobStatusMetrics(s.builder, now)
 	if err != nil {
 		return pmetric.Metrics{}, fmt.Errorf(errfmt, err)
 	}
 
-	err = s.mp.addNumActiveRunsMetric(s.builder, ts)
+	err = s.mp.addNumActiveRunsMetric(s.builder, now)
 	if err != nil {
 		return pmetric.Metrics{}, fmt.Errorf(errfmt, err)
 	}
 
-	err = s.rmp.addMultiJobRunMetrics(jobIDs, s.builder, ts)
+	err = s.rmp.addMultiJobRunMetrics(jobIDs, s.builder, now)
 	if err != nil {
 		return pmetric.Metrics{}, fmt.Errorf(errfmt, err)
 	}
