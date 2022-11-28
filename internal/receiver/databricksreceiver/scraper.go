@@ -57,5 +57,7 @@ func (s scraper) scrape(_ context.Context) (pmetric.Metrics, error) {
 		return pmetric.Metrics{}, fmt.Errorf(errfmt, err)
 	}
 
-	return s.builder.Emit(), err
+	metrics := s.builder.Emit()
+	metrics.ResourceMetrics().At(0).Resource().Attributes().PutStr("databricks.instance.name", s.instanceName)
+	return metrics, err
 }
