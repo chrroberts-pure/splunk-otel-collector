@@ -15,47 +15,49 @@
 package databricksreceiver
 
 import (
+	"fmt"
 	"net/http"
 
 	"go.uber.org/zap"
 )
 
 type sparkService struct {
-	logger                     *zap.Logger
-	dbService                  databricksServiceIntf
-	httpClient                 *http.Client
-	sparkAPIURL                string
-	sparkUIPort                int
-	orgID                      string
-	tok                        string
-	sparkClusterClientProvider sparkClusterClientProvider
+	logger                   *zap.Logger
+	dbsvc                    databricksServiceIntf
+	httpClient               *http.Client
+	sparkAPIURL              string
+	sparkUIPort              int
+	orgID                    string
+	tok                      string
+	createSparkClusterClient func(
+		logger *zap.Logger,
+		httpClient *http.Client,
+		sparkProxyURL string,
+		orgID string,
+		port int,
+		token string,
+		clusterID string,
+	) sparkClusterClientIntf
 }
 
-func newSparkService(logger *zap.Logger, dbService databricksServiceIntf, httpClient *http.Client, sparkAPIURL string, sparkUIPort int, orgID string, tok string) sparkService {
-	return sparkService{
-		logger:                     logger,
-		dbService:                  dbService,
-		httpClient:                 httpClient,
-		sparkAPIURL:                sparkAPIURL,
-		sparkUIPort:                sparkUIPort,
-		orgID:                      orgID,
-		tok:                        tok,
-		sparkClusterClientProvider: newSparkClusterClient,
+func (s sparkService) getSparkMetricsForAllClusters() (map[string]*sparkClusterMetrics, error) {
+	clusterIDs, err := s.dbsvc.runningClusterIDs()
+	if err != nil {
+		return nil, fmt.Errorf("error getting cluster IDs: %w", err)
 	}
+	out := map[string]*sparkClusterMetrics{}
+	for _, id := range clusterIDs {
+		metrics, err := s.getSparkMetricsForCluster(id)
+		if err != nil {
+			return nil, fmt.Errorf("error getting spark metrics for cluster: %s: %w", id, err)
+		}
+		out[id] = metrics
+	}
+	return out, nil
 }
 
-type sparkClusterClientProvider func(
-	logger *zap.Logger,
-	httpClient *http.Client,
-	sparkProxyURL string,
-	orgID string,
-	port int,
-	token string,
-	clusterID string,
-) sparkClusterClientIntf
-
-func (s sparkService) getSparkMetricsForCluster(clusterID string) (*sparkMetrics, error) {
-	scc := s.sparkClusterClientProvider(
+func (s sparkService) getSparkMetricsForCluster(clusterID string) (*sparkClusterMetrics, error) {
+	scc := s.createSparkClusterClient(
 		s.logger,
 		s.httpClient,
 		s.sparkAPIURL,

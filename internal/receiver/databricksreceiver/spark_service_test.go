@@ -27,21 +27,21 @@ import (
 )
 
 func TestSparkService(t *testing.T) {
-	nopLogger := zap.New(zapcore.NewNopCore())
-	dbsvc := newDatabricksService(&testdataDBClient{}, 25)
-	ssvc := sparkService{
-		logger:    nopLogger,
-		dbService: dbsvc,
-		sparkClusterClientProvider: func(*zap.Logger, *http.Client, string, string, int, string, string) sparkClusterClientIntf {
+	ssvc := newTestSparkService()
+	metrics, err := ssvc.getSparkMetricsForAllClusters()
+	require.NoError(t, err)
+	for _, metric := range metrics {
+		fmt.Printf("->%v<-\n", metric)
+	}
+}
+
+func newTestSparkService() sparkService {
+	return sparkService{
+		logger: zap.New(zapcore.NewNopCore()),
+		dbsvc:  newDatabricksService(&testdataDBClient{}, 25),
+		createSparkClusterClient: func(*zap.Logger, *http.Client, string, string, int, string, string) sparkClusterClientIntf {
 			return testdataSparkClusterClient{}
 		},
-	}
-	clusterIDs, err := dbsvc.runningClusterIDs()
-	require.NoError(t, err)
-	for _, clusterID := range clusterIDs {
-		metrics, err := ssvc.getSparkMetricsForCluster(clusterID)
-		require.NoError(t, err)
-		fmt.Printf("clusterID: %s, metrics: ->%v<-\n", clusterID, metrics)
 	}
 }
 

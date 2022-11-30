@@ -37,12 +37,14 @@ func (ms *MetricSettings) Unmarshal(parser *confmap.Conf) error {
 
 // MetricsSettings provides settings for databricksreceiver metrics.
 type MetricsSettings struct {
-	DatabricksJobsActiveTotal     MetricSettings `mapstructure:"databricks.jobs.active.total"`
-	DatabricksJobsRunDuration     MetricSettings `mapstructure:"databricks.jobs.run.duration"`
-	DatabricksJobsScheduleStatus  MetricSettings `mapstructure:"databricks.jobs.schedule.status"`
-	DatabricksJobsTotal           MetricSettings `mapstructure:"databricks.jobs.total"`
-	DatabricksTasksRunDuration    MetricSettings `mapstructure:"databricks.tasks.run.duration"`
-	DatabricksTasksScheduleStatus MetricSettings `mapstructure:"databricks.tasks.schedule.status"`
+	DatabricksJobsActiveTotal                      MetricSettings `mapstructure:"databricks.jobs.active.total"`
+	DatabricksJobsRunDuration                      MetricSettings `mapstructure:"databricks.jobs.run.duration"`
+	DatabricksJobsScheduleStatus                   MetricSettings `mapstructure:"databricks.jobs.schedule.status"`
+	DatabricksJobsTotal                            MetricSettings `mapstructure:"databricks.jobs.total"`
+	DatabricksSparkBlockmanagerMemoryDiskspaceused MetricSettings `mapstructure:"databricks.spark.blockmanager.memory.diskspaceused"`
+	DatabricksSparkBlockmanagerMemoryMaxmem        MetricSettings `mapstructure:"databricks.spark.blockmanager.memory.maxmem"`
+	DatabricksTasksRunDuration                     MetricSettings `mapstructure:"databricks.tasks.run.duration"`
+	DatabricksTasksScheduleStatus                  MetricSettings `mapstructure:"databricks.tasks.schedule.status"`
 }
 
 func DefaultMetricsSettings() MetricsSettings {
@@ -57,6 +59,12 @@ func DefaultMetricsSettings() MetricsSettings {
 			Enabled: true,
 		},
 		DatabricksJobsTotal: MetricSettings{
+			Enabled: true,
+		},
+		DatabricksSparkBlockmanagerMemoryDiskspaceused: MetricSettings{
+			Enabled: true,
+		},
+		DatabricksSparkBlockmanagerMemoryMaxmem: MetricSettings{
 			Enabled: true,
 		},
 		DatabricksTasksRunDuration: MetricSettings{
@@ -310,6 +318,110 @@ func newMetricDatabricksJobsTotal(settings MetricSettings) metricDatabricksJobsT
 	return m
 }
 
+type metricDatabricksSparkBlockmanagerMemoryDiskspaceused struct {
+	data     pmetric.Metric // data buffer for generated metric.
+	settings MetricSettings // metric settings provided by user.
+	capacity int            // max observed number of data points added to the metric.
+}
+
+// init fills databricks.spark.blockmanager.memory.diskspaceused metric with initial data.
+func (m *metricDatabricksSparkBlockmanagerMemoryDiskspaceused) init() {
+	m.data.SetName("databricks.spark.blockmanager.memory.diskspaceused")
+	m.data.SetDescription("tbd")
+	m.data.SetUnit("mb")
+	m.data.SetEmptyGauge()
+	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
+}
+
+func (m *metricDatabricksSparkBlockmanagerMemoryDiskspaceused) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, clusterIDAttributeValue string, appIDAttributeValue string) {
+	if !m.settings.Enabled {
+		return
+	}
+	dp := m.data.Gauge().DataPoints().AppendEmpty()
+	dp.SetStartTimestamp(start)
+	dp.SetTimestamp(ts)
+	dp.SetIntValue(val)
+	dp.Attributes().PutStr("cluster_id", clusterIDAttributeValue)
+	dp.Attributes().PutStr("app_id", appIDAttributeValue)
+}
+
+// updateCapacity saves max length of data point slices that will be used for the slice capacity.
+func (m *metricDatabricksSparkBlockmanagerMemoryDiskspaceused) updateCapacity() {
+	if m.data.Gauge().DataPoints().Len() > m.capacity {
+		m.capacity = m.data.Gauge().DataPoints().Len()
+	}
+}
+
+// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
+func (m *metricDatabricksSparkBlockmanagerMemoryDiskspaceused) emit(metrics pmetric.MetricSlice) {
+	if m.settings.Enabled && m.data.Gauge().DataPoints().Len() > 0 {
+		m.updateCapacity()
+		m.data.MoveTo(metrics.AppendEmpty())
+		m.init()
+	}
+}
+
+func newMetricDatabricksSparkBlockmanagerMemoryDiskspaceused(settings MetricSettings) metricDatabricksSparkBlockmanagerMemoryDiskspaceused {
+	m := metricDatabricksSparkBlockmanagerMemoryDiskspaceused{settings: settings}
+	if settings.Enabled {
+		m.data = pmetric.NewMetric()
+		m.init()
+	}
+	return m
+}
+
+type metricDatabricksSparkBlockmanagerMemoryMaxmem struct {
+	data     pmetric.Metric // data buffer for generated metric.
+	settings MetricSettings // metric settings provided by user.
+	capacity int            // max observed number of data points added to the metric.
+}
+
+// init fills databricks.spark.blockmanager.memory.maxmem metric with initial data.
+func (m *metricDatabricksSparkBlockmanagerMemoryMaxmem) init() {
+	m.data.SetName("databricks.spark.blockmanager.memory.maxmem")
+	m.data.SetDescription("tbd")
+	m.data.SetUnit("mb")
+	m.data.SetEmptyGauge()
+	m.data.Gauge().DataPoints().EnsureCapacity(m.capacity)
+}
+
+func (m *metricDatabricksSparkBlockmanagerMemoryMaxmem) recordDataPoint(start pcommon.Timestamp, ts pcommon.Timestamp, val int64, clusterIDAttributeValue string, appIDAttributeValue string) {
+	if !m.settings.Enabled {
+		return
+	}
+	dp := m.data.Gauge().DataPoints().AppendEmpty()
+	dp.SetStartTimestamp(start)
+	dp.SetTimestamp(ts)
+	dp.SetIntValue(val)
+	dp.Attributes().PutStr("cluster_id", clusterIDAttributeValue)
+	dp.Attributes().PutStr("app_id", appIDAttributeValue)
+}
+
+// updateCapacity saves max length of data point slices that will be used for the slice capacity.
+func (m *metricDatabricksSparkBlockmanagerMemoryMaxmem) updateCapacity() {
+	if m.data.Gauge().DataPoints().Len() > m.capacity {
+		m.capacity = m.data.Gauge().DataPoints().Len()
+	}
+}
+
+// emit appends recorded metric data to a metrics slice and prepares it for recording another set of data points.
+func (m *metricDatabricksSparkBlockmanagerMemoryMaxmem) emit(metrics pmetric.MetricSlice) {
+	if m.settings.Enabled && m.data.Gauge().DataPoints().Len() > 0 {
+		m.updateCapacity()
+		m.data.MoveTo(metrics.AppendEmpty())
+		m.init()
+	}
+}
+
+func newMetricDatabricksSparkBlockmanagerMemoryMaxmem(settings MetricSettings) metricDatabricksSparkBlockmanagerMemoryMaxmem {
+	m := metricDatabricksSparkBlockmanagerMemoryMaxmem{settings: settings}
+	if settings.Enabled {
+		m.data = pmetric.NewMetric()
+		m.init()
+	}
+	return m
+}
+
 type metricDatabricksTasksRunDuration struct {
 	data     pmetric.Metric // data buffer for generated metric.
 	settings MetricSettings // metric settings provided by user.
@@ -418,17 +530,19 @@ func newMetricDatabricksTasksScheduleStatus(settings MetricSettings) metricDatab
 // MetricsBuilder provides an interface for scrapers to report metrics while taking care of all the transformations
 // required to produce metric representation defined in metadata and user settings.
 type MetricsBuilder struct {
-	startTime                           pcommon.Timestamp   // start time that will be applied to all recorded data points.
-	metricsCapacity                     int                 // maximum observed number of metrics per resource.
-	resourceCapacity                    int                 // maximum observed number of resource attributes.
-	metricsBuffer                       pmetric.Metrics     // accumulates metrics data before emitting.
-	buildInfo                           component.BuildInfo // contains version information
-	metricDatabricksJobsActiveTotal     metricDatabricksJobsActiveTotal
-	metricDatabricksJobsRunDuration     metricDatabricksJobsRunDuration
-	metricDatabricksJobsScheduleStatus  metricDatabricksJobsScheduleStatus
-	metricDatabricksJobsTotal           metricDatabricksJobsTotal
-	metricDatabricksTasksRunDuration    metricDatabricksTasksRunDuration
-	metricDatabricksTasksScheduleStatus metricDatabricksTasksScheduleStatus
+	startTime                                            pcommon.Timestamp   // start time that will be applied to all recorded data points.
+	metricsCapacity                                      int                 // maximum observed number of metrics per resource.
+	resourceCapacity                                     int                 // maximum observed number of resource attributes.
+	metricsBuffer                                        pmetric.Metrics     // accumulates metrics data before emitting.
+	buildInfo                                            component.BuildInfo // contains version information
+	metricDatabricksJobsActiveTotal                      metricDatabricksJobsActiveTotal
+	metricDatabricksJobsRunDuration                      metricDatabricksJobsRunDuration
+	metricDatabricksJobsScheduleStatus                   metricDatabricksJobsScheduleStatus
+	metricDatabricksJobsTotal                            metricDatabricksJobsTotal
+	metricDatabricksSparkBlockmanagerMemoryDiskspaceused metricDatabricksSparkBlockmanagerMemoryDiskspaceused
+	metricDatabricksSparkBlockmanagerMemoryMaxmem        metricDatabricksSparkBlockmanagerMemoryMaxmem
+	metricDatabricksTasksRunDuration                     metricDatabricksTasksRunDuration
+	metricDatabricksTasksScheduleStatus                  metricDatabricksTasksScheduleStatus
 }
 
 // metricBuilderOption applies changes to default metrics builder.
@@ -443,15 +557,17 @@ func WithStartTime(startTime pcommon.Timestamp) metricBuilderOption {
 
 func NewMetricsBuilder(settings MetricsSettings, buildInfo component.BuildInfo, options ...metricBuilderOption) *MetricsBuilder {
 	mb := &MetricsBuilder{
-		startTime:                           pcommon.NewTimestampFromTime(time.Now()),
-		metricsBuffer:                       pmetric.NewMetrics(),
-		buildInfo:                           buildInfo,
-		metricDatabricksJobsActiveTotal:     newMetricDatabricksJobsActiveTotal(settings.DatabricksJobsActiveTotal),
-		metricDatabricksJobsRunDuration:     newMetricDatabricksJobsRunDuration(settings.DatabricksJobsRunDuration),
-		metricDatabricksJobsScheduleStatus:  newMetricDatabricksJobsScheduleStatus(settings.DatabricksJobsScheduleStatus),
-		metricDatabricksJobsTotal:           newMetricDatabricksJobsTotal(settings.DatabricksJobsTotal),
-		metricDatabricksTasksRunDuration:    newMetricDatabricksTasksRunDuration(settings.DatabricksTasksRunDuration),
-		metricDatabricksTasksScheduleStatus: newMetricDatabricksTasksScheduleStatus(settings.DatabricksTasksScheduleStatus),
+		startTime:                          pcommon.NewTimestampFromTime(time.Now()),
+		metricsBuffer:                      pmetric.NewMetrics(),
+		buildInfo:                          buildInfo,
+		metricDatabricksJobsActiveTotal:    newMetricDatabricksJobsActiveTotal(settings.DatabricksJobsActiveTotal),
+		metricDatabricksJobsRunDuration:    newMetricDatabricksJobsRunDuration(settings.DatabricksJobsRunDuration),
+		metricDatabricksJobsScheduleStatus: newMetricDatabricksJobsScheduleStatus(settings.DatabricksJobsScheduleStatus),
+		metricDatabricksJobsTotal:          newMetricDatabricksJobsTotal(settings.DatabricksJobsTotal),
+		metricDatabricksSparkBlockmanagerMemoryDiskspaceused: newMetricDatabricksSparkBlockmanagerMemoryDiskspaceused(settings.DatabricksSparkBlockmanagerMemoryDiskspaceused),
+		metricDatabricksSparkBlockmanagerMemoryMaxmem:        newMetricDatabricksSparkBlockmanagerMemoryMaxmem(settings.DatabricksSparkBlockmanagerMemoryMaxmem),
+		metricDatabricksTasksRunDuration:                     newMetricDatabricksTasksRunDuration(settings.DatabricksTasksRunDuration),
+		metricDatabricksTasksScheduleStatus:                  newMetricDatabricksTasksScheduleStatus(settings.DatabricksTasksScheduleStatus),
 	}
 	for _, op := range options {
 		op(mb)
@@ -515,6 +631,8 @@ func (mb *MetricsBuilder) EmitForResource(rmo ...ResourceMetricsOption) {
 	mb.metricDatabricksJobsRunDuration.emit(ils.Metrics())
 	mb.metricDatabricksJobsScheduleStatus.emit(ils.Metrics())
 	mb.metricDatabricksJobsTotal.emit(ils.Metrics())
+	mb.metricDatabricksSparkBlockmanagerMemoryDiskspaceused.emit(ils.Metrics())
+	mb.metricDatabricksSparkBlockmanagerMemoryMaxmem.emit(ils.Metrics())
 	mb.metricDatabricksTasksRunDuration.emit(ils.Metrics())
 	mb.metricDatabricksTasksScheduleStatus.emit(ils.Metrics())
 	for _, op := range rmo {
@@ -554,6 +672,16 @@ func (mb *MetricsBuilder) RecordDatabricksJobsScheduleStatusDataPoint(ts pcommon
 // RecordDatabricksJobsTotalDataPoint adds a data point to databricks.jobs.total metric.
 func (mb *MetricsBuilder) RecordDatabricksJobsTotalDataPoint(ts pcommon.Timestamp, val int64) {
 	mb.metricDatabricksJobsTotal.recordDataPoint(mb.startTime, ts, val)
+}
+
+// RecordDatabricksSparkBlockmanagerMemoryDiskspaceusedDataPoint adds a data point to databricks.spark.blockmanager.memory.diskspaceused metric.
+func (mb *MetricsBuilder) RecordDatabricksSparkBlockmanagerMemoryDiskspaceusedDataPoint(ts pcommon.Timestamp, val int64, clusterIDAttributeValue string, appIDAttributeValue string) {
+	mb.metricDatabricksSparkBlockmanagerMemoryDiskspaceused.recordDataPoint(mb.startTime, ts, val, clusterIDAttributeValue, appIDAttributeValue)
+}
+
+// RecordDatabricksSparkBlockmanagerMemoryMaxmemDataPoint adds a data point to databricks.spark.blockmanager.memory.maxmem metric.
+func (mb *MetricsBuilder) RecordDatabricksSparkBlockmanagerMemoryMaxmemDataPoint(ts pcommon.Timestamp, val int64, clusterIDAttributeValue string, appIDAttributeValue string) {
+	mb.metricDatabricksSparkBlockmanagerMemoryMaxmem.recordDataPoint(mb.startTime, ts, val, clusterIDAttributeValue, appIDAttributeValue)
 }
 
 // RecordDatabricksTasksRunDurationDataPoint adds a data point to databricks.tasks.run.duration metric.

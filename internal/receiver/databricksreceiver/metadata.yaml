@@ -9,6 +9,12 @@ attributes:
     type: int
   task_id:
     description: The name of the Databricks task
+  cluster_id:
+    type: string
+    description: tbd
+  app_id:
+    type: string
+    description: tbd
   task_type:
     description: The type of the Databricks task
     enum:
@@ -65,3 +71,19 @@ metrics:
       value_type: int
     attributes:
       [job_id, task_id]
+  databricks.spark.blockmanager.memory.diskspaceused:
+    enabled: true
+    description: tbd
+    unit: mb
+    gauge:
+      value_type: int
+    attributes:
+      [cluster_id, app_id]
+  databricks.spark.blockmanager.memory.maxmem:
+    enabled: true
+    description: tbd
+    unit: mb
+    gauge:
+      value_type: int
+    attributes:
+      [cluster_id, app_id]

@@ -12,6 +12,8 @@ These are the metrics available for this scraper.
 | **databricks.jobs.run.duration** | The execution duration in milliseconds per completed job | ms | Gauge(Int) | <ul> <li>job_id</li> </ul> |
 | **databricks.jobs.schedule.status** | A snapshot of the pause/run status per job taken at each scrape 0=PAUSED, 1=UNPAUSED, 2=NOT_SCHEDULED | {status} | Gauge(Int) | <ul> <li>job_id</li> </ul> |
 | **databricks.jobs.total** | A snapshot of the total number of jobs registered in the Databricks instance taken at each scrape | {jobs} | Gauge(Int) | <ul> </ul> |
+| **databricks.spark.blockmanager.memory.diskspaceused** | tbd | mb | Gauge(Int) | <ul> <li>cluster_id</li> <li>app_id</li> </ul> |
+| **databricks.spark.blockmanager.memory.maxmem** | tbd | mb | Gauge(Int) | <ul> <li>cluster_id</li> <li>app_id</li> </ul> |
 | **databricks.tasks.run.duration** | The execution duration in milliseconds per completed task | ms | Gauge(Int) | <ul> <li>job_id</li> <li>task_id</li> </ul> |
 | **databricks.tasks.schedule.status** | A snapshot of the pause/run status per task taken at each scrape 0=PAUSED, 1=UNPAUSED, 2=NOT_SCHEDULED | {status} | Gauge(Int) | <ul> <li>job_id</li> <li>task_id</li> <li>task_type</li> </ul> |
 
@@ -34,6 +36,8 @@ metrics:
 
 | Name | Description | Values |
 | ---- | ----------- | ------ |
+| app_id | tbd |  |
+| cluster_id | tbd |  |
 | job_id | The numeric ID of the Databricks job |  |
 | task_id | The name of the Databricks task |  |
 | task_type | The type of the Databricks task | NotebookTask, SparkJarTask, SparkPythonTask, PipelineTask, PythonWheelTask, SparkSubmitTask |

@@ -23,12 +23,12 @@ type sparkUnmarshaller struct {
 	scc sparkClusterClientIntf
 }
 
-func (u sparkUnmarshaller) metrics() (*sparkMetrics, error) {
+func (u sparkUnmarshaller) metrics() (*sparkClusterMetrics, error) {
 	bytes, err := u.scc.metrics()
 	if err != nil {
 		return nil, fmt.Errorf("failed to get metrics from spark cluster client: %w", err)
 	}
-	sm := sparkMetrics{}
+	sm := sparkClusterMetrics{}
 	err = json.Unmarshal(bytes, &sm)
 	if err != nil {
 		return nil, fmt.Errorf("failed to unmarshal spark metrics: %w", err)
@@ -36,7 +36,7 @@ func (u sparkUnmarshaller) metrics() (*sparkMetrics, error) {
 	return &sm, nil
 }
 
-type sparkMetrics struct {
+type sparkClusterMetrics struct {
 	Gauges     map[string]sparkGauge
 	Counters   map[string]sparkCounter
 	Histograms map[string]sparkHistogram

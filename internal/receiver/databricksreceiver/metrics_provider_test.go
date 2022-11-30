@@ -134,12 +134,13 @@ func TestMetricsProvider(t *testing.T) {
 func newTestMetricsBuilder() *metadata.MetricsBuilder {
 	mst := metadata.MetricSettings{Enabled: true}
 	builder := metadata.NewMetricsBuilder(metadata.MetricsSettings{
-		DatabricksJobsActiveTotal:     mst,
-		DatabricksJobsRunDuration:     mst,
-		DatabricksJobsScheduleStatus:  mst,
-		DatabricksJobsTotal:           mst,
-		DatabricksTasksRunDuration:    mst,
-		DatabricksTasksScheduleStatus: mst,
+		DatabricksJobsActiveTotal:                      mst,
+		DatabricksJobsRunDuration:                      mst,
+		DatabricksJobsScheduleStatus:                   mst,
+		DatabricksJobsTotal:                            mst,
+		DatabricksTasksRunDuration:                     mst,
+		DatabricksTasksScheduleStatus:                  mst,
+		DatabricksSparkBlockmanagerMemoryDiskspaceused: mst,
 	}, component.BuildInfo{})
 	return builder
 }

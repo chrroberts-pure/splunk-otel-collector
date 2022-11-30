@@ -77,7 +77,7 @@ func createReceiverFunc(createDBClientFunc func(baseURL string, tok string, http
 			rmp:         newRunMetricsProvider(dbService),
 			mp:          metricsProvider{dbService: dbService},
 			ssvc: sparkService{
-				dbService:  dbService,
+				dbsvc:      dbService,
 				httpClient: httpClient,
 				logger:     settings.Logger,
 				orgID:      dbcfg.OrgID,
