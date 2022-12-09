@@ -9,14 +9,16 @@ attributes:
     type: int
   task_id:
     description: The name of the Databricks task
+    type: string
   cluster_id:
-    type: string
     description: tbd
+    type: string
   app_id:
-    type: string
     description: tbd
+    type: string
   task_type:
     description: The type of the Databricks task
+    type: string
     enum:
       - NotebookTask
       - SparkJarTask
@@ -83,6 +85,287 @@ metrics:
     enabled: true
     description: tbd
     unit: mb
+    gauge:
+      value_type: int
+    attributes:
+      [cluster_id, app_id]
+  databricks.spark.blockmanager.memory.maxoffheapmem:
+    enabled: true
+    description: tbd
+    unit: mb
+    gauge:
+      value_type: int
+    attributes:
+      [cluster_id, app_id]
+  databricks.spark.blockmanager.memory.maxonheapmem:
+    enabled: true
+    description: tbd
+    unit: mb
+    gauge:
+      value_type: int
+    attributes:
+      [cluster_id, app_id]
+  databricks.spark.blockmanager.memory.memused:
+    enabled: true
+    description: tbd
+    unit: mb
+    gauge:
+      value_type: int
+    attributes:
+      [cluster_id, app_id]
+  databricks.spark.blockmanager.memory.offheapmemused:
+    enabled: true
+    description: tbd
+    unit: mb
+    gauge:
+      value_type: int
+    attributes:
+      [cluster_id, app_id]
+  databricks.spark.blockmanager.memory.onheapmemused:
+    enabled: true
+    description: tbd
+    unit: mb
+    gauge:
+      value_type: int
+    attributes:
+      [cluster_id, app_id]
+  databricks.spark.blockmanager.memory.remainingmem:
+    enabled: true
+    description: tbd
+    unit: mb
+    gauge:
+      value_type: int
+    attributes:
+      [cluster_id, app_id]
+  databricks.spark.blockmanager.memory.remainingoffheapmem:
+    enabled: true
+    description: tbd
+    unit: mb
+    gauge:
+      value_type: int
+    attributes:
+      [cluster_id, app_id]
+  databricks.spark.blockmanager.memory.remainingonheapmem:
+    enabled: true
+    description: tbd
+    unit: mb
+    gauge:
+      value_type: int
+    attributes:
+      [cluster_id, app_id]
+  databricks.spark.dagscheduler.job.activejobs:
+    enabled: true
+    description: tbd
+    gauge:
+      value_type: int
+    attributes:
+      [cluster_id, app_id]
+  databricks.spark.dagscheduler.job.alljobs:
+    enabled: true
+    description: tbd
+    gauge:
+      value_type: int
+    attributes:
+      [cluster_id, app_id]
+  databricks.spark.dagscheduler.stage.failedstages:
+    enabled: true
+    description: tbd
+    gauge:
+      value_type: int
+    attributes:
+      [cluster_id, app_id]
+  databricks.spark.dagscheduler.stage.runningstages:
+    enabled: true
+    description: tbd
+    gauge:
+      value_type: int
+    attributes:
+      [cluster_id, app_id]
+  databricks.spark.dagscheduler.stage.waitingstages:
+    enabled: true
+    description: tbd
+    gauge:
+      value_type: int
+    attributes:
+      [cluster_id, app_id]
+  databricks.spark.executormetrics.directpoolmemory:
+    enabled: true
+    description: tbd
+    gauge:
+      value_type: int
+    attributes:
+      [cluster_id, app_id]
+  databricks.spark.executormetrics.jvmheapmemory:
+    enabled: true
+    description: tbd
+    gauge:
+      value_type: int
+    attributes:
+      [cluster_id, app_id]
+  databricks.spark.executormetrics.jvmoffheapmemory:
+    enabled: true
+    description: tbd
+    gauge:
+      value_type: int
+    attributes:
+      [cluster_id, app_id]
+  databricks.spark.executormetrics.majorgccount:
+    enabled: true
+    description: tbd
+    gauge:
+      value_type: int
+    attributes:
+      [cluster_id, app_id]
+  databricks.spark.executormetrics.majorgctime:
+    enabled: true
+    description: tbd
+    gauge:
+      value_type: int
+    attributes:
+      [cluster_id, app_id]
+  databricks.spark.executormetrics.mappedpoolmemory:
+    enabled: true
+    description: tbd
+    gauge:
+      value_type: int
+    attributes:
+      [cluster_id, app_id]
+  databricks.spark.executormetrics.minorgccount:
+    enabled: true
+    description: tbd
+    gauge:
+      value_type: int
+    attributes:
+      [cluster_id, app_id]
+  databricks.spark.executormetrics.minorgctime:
+    enabled: true
+    description: tbd
+    gauge:
+      value_type: int
+    attributes:
+      [cluster_id, app_id]
+  databricks.spark.executormetrics.offheapexecutionmemory:
+    enabled: true
+    description: tbd
+    gauge:
+      value_type: int
+    attributes:
+      [cluster_id, app_id]
+  databricks.spark.executormetrics.offheapstoragememory:
+    enabled: true
+    description: tbd
+    gauge:
+      value_type: int
+    attributes:
+      [cluster_id, app_id]
+  databricks.spark.executormetrics.offheapunifiedmemory:
+    enabled: true
+    description: tbd
+    gauge:
+      value_type: int
+    attributes:
+      [cluster_id, app_id]
+  databricks.spark.executormetrics.onheapexecutionmemory:
+    enabled: true
+    description: tbd
+    gauge:
+      value_type: int
+    attributes:
+      [cluster_id, app_id]
+  databricks.spark.executormetrics.onheapstoragememory:
+    enabled: true
+    description: tbd
+    gauge:
+      value_type: int
+    attributes:
+      [cluster_id, app_id]
+  databricks.spark.executormetrics.onheapunifiedmemory:
+    enabled: true
+    description: tbd
+    gauge:
+      value_type: int
+    attributes:
+      [cluster_id, app_id]
+  databricks.spark.executormetrics.processtreejvmrssmemory:
+    enabled: true
+    description: tbd
+    gauge:
+      value_type: int
+    attributes:
+      [cluster_id, app_id]
+  databricks.spark.executormetrics.processtreejvmvmemory:
+    enabled: true
+    description: tbd
+    gauge:
+      value_type: int
+    attributes:
+      [cluster_id, app_id]
+  databricks.spark.executormetrics.processtreeotherrssmemory:
+    enabled: true
+    description: tbd
+    gauge:
+      value_type: int
+    attributes:
+      [cluster_id, app_id]
+  databricks.spark.executormetrics.processtreeothervmemory:
+    enabled: true
+    description: tbd
+    gauge:
+      value_type: int
+    attributes:
+      [cluster_id, app_id]
+  databricks.spark.executormetrics.processtreepythonrssmemory:
+    enabled: true
+    description: tbd
+    gauge:
+      value_type: int
+    attributes:
+      [cluster_id, app_id]
+  databricks.spark.executormetrics.processtreepythonvmemory:
+    enabled: true
+    description: tbd
+    gauge:
+      value_type: int
+    attributes:
+      [cluster_id, app_id]
+  databricks.spark.jvmcpu.jvmcputime:
+    enabled: true
+    description: tbd
+    gauge:
+      value_type: int
+    attributes:
+      [cluster_id, app_id]
+  databricks.spark.livelistenerbus.queue.appstatus.size:
+    enabled: true
+    description: tbd
+    gauge:
+      value_type: int
+    attributes:
+      [cluster_id, app_id]
+  databricks.spark.livelistenerbus.queue.executormanagement.size:
+    enabled: true
+    description: tbd
+    gauge:
+      value_type: int
+    attributes:
+      [cluster_id, app_id]
+  databricks.spark.livelistenerbus.queue.shared.size:
+    enabled: true
+    description: tbd
+    gauge:
+      value_type: int
+    attributes:
+      [cluster_id, app_id]
+  databricks.spark.livelistenerbus.queue.streams.size:
+    enabled: true
+    description: tbd
+    gauge:
+      value_type: int
+    attributes:
+      [cluster_id, app_id]
+  databricks.spark.sparksqloperationmanager.numhiveoperations:
+    enabled: true
+    description: tbd
     gauge:
       value_type: int
     attributes:

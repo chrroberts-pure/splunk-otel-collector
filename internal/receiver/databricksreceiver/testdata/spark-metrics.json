@@ -5,47 +5,46 @@
       "value": 42
     },
     "app-20221117221047-0000.driver.BlockManager.memory.maxMem_MB": {
-      "value": 10829
+      "value": 123
     },
-
     "app-20221117221047-0000.driver.BlockManager.memory.maxOffHeapMem_MB": {
-      "value": 0
+      "value": 111
     },
     "app-20221117221047-0000.driver.BlockManager.memory.maxOnHeapMem_MB": {
-      "value": 10829
+      "value": 222
     },
     "app-20221117221047-0000.driver.BlockManager.memory.memUsed_MB": {
-      "value": 0
+      "value": 333
     },
     "app-20221117221047-0000.driver.BlockManager.memory.offHeapMemUsed_MB": {
-      "value": 0
+      "value": 444
     },
     "app-20221117221047-0000.driver.BlockManager.memory.onHeapMemUsed_MB": {
-      "value": 0
+      "value": 555
     },
     "app-20221117221047-0000.driver.BlockManager.memory.remainingMem_MB": {
-      "value": 10829
+      "value": 666
     },
     "app-20221117221047-0000.driver.BlockManager.memory.remainingOffHeapMem_MB": {
-      "value": 0
+      "value": 777
     },
     "app-20221117221047-0000.driver.BlockManager.memory.remainingOnHeapMem_MB": {
-      "value": 10829
+      "value": 888
     },
     "app-20221117221047-0000.driver.DAGScheduler.job.activeJobs": {
-      "value": 0
+      "value": 999
     },
     "app-20221117221047-0000.driver.DAGScheduler.job.allJobs": {
-      "value": 0
+      "value": 1111
     },
     "app-20221117221047-0000.driver.DAGScheduler.stage.failedStages": {
-      "value": 0
+      "value": 2222
     },
     "app-20221117221047-0000.driver.DAGScheduler.stage.runningStages": {
-      "value": 0
+      "value": 3333
     },
     "app-20221117221047-0000.driver.DAGScheduler.stage.waitingStages": {
-      "value": 0
+      "value": 4444
     },
     "app-20221117221047-0000.driver.ExecutorMetrics.DirectPoolMemory": {
       "value": 591058
@@ -63,7 +62,7 @@
       "value": 748
     },
     "app-20221117221047-0000.driver.ExecutorMetrics.MappedPoolMemory": {
-      "value": 0
+      "value": 5555
     },
     "app-20221117221047-0000.driver.ExecutorMetrics.MinorGCCount": {
       "value": 5
@@ -72,58 +71,58 @@
       "value": 200
     },
     "app-20221117221047-0000.driver.ExecutorMetrics.OffHeapExecutionMemory": {
-      "value": 0
+      "value": 6666
     },
     "app-20221117221047-0000.driver.ExecutorMetrics.OffHeapStorageMemory": {
-      "value": 0
+      "value": 7777
     },
     "app-20221117221047-0000.driver.ExecutorMetrics.OffHeapUnifiedMemory": {
-      "value": 0
+      "value": 8888
     },
     "app-20221117221047-0000.driver.ExecutorMetrics.OnHeapExecutionMemory": {
-      "value": 0
+      "value": 9999
     },
     "app-20221117221047-0000.driver.ExecutorMetrics.OnHeapStorageMemory": {
-      "value": 0
+      "value": 11111
     },
     "app-20221117221047-0000.driver.ExecutorMetrics.OnHeapUnifiedMemory": {
-      "value": 0
+      "value": 22222
     },
     "app-20221117221047-0000.driver.ExecutorMetrics.ProcessTreeJVMRSSMemory": {
-      "value": 0
+      "value": 33333
     },
     "app-20221117221047-0000.driver.ExecutorMetrics.ProcessTreeJVMVMemory": {
-      "value": 0
+      "value": 44444
     },
     "app-20221117221047-0000.driver.ExecutorMetrics.ProcessTreeOtherRSSMemory": {
-      "value": 0
+      "value": 55555
     },
     "app-20221117221047-0000.driver.ExecutorMetrics.ProcessTreeOtherVMemory": {
-      "value": 0
+      "value": 66666
     },
     "app-20221117221047-0000.driver.ExecutorMetrics.ProcessTreePythonRSSMemory": {
-      "value": 0
+      "value": 77777
     },
     "app-20221117221047-0000.driver.ExecutorMetrics.ProcessTreePythonVMemory": {
-      "value": 0
+      "value": 88888
     },
     "app-20221117221047-0000.driver.JVMCPU.jvmCpuTime": {
       "value": 57690000000
     },
     "app-20221117221047-0000.driver.LiveListenerBus.queue.appStatus.size": {
-      "value": 0
+      "value": 99999
     },
     "app-20221117221047-0000.driver.LiveListenerBus.queue.executorManagement.size": {
-      "value": 0
+      "value": 111111
     },
     "app-20221117221047-0000.driver.LiveListenerBus.queue.shared.size": {
-      "value": 0
+      "value": 222222
     },
     "app-20221117221047-0000.driver.LiveListenerBus.queue.streams.size": {
-      "value": 0
+      "value": 333333
     },
     "app-20221117221047-0000.driver.SparkSQLOperationManager.numHiveOperations": {
-      "value": 0
+      "value": 444444
     }
   },
   "counters": {

@@ -24,8 +24,7 @@ import (
 )
 
 const (
-	metricDiskSpaceUsed = "blockmanager.memory.diskspaceused"
-	metricMaxmem        = "blockmanager.memory.maxmem"
+	metricMaxOnHeapMem = "blockmanager.memory.maxonheapmem"
 )
 
 type sparkMetricsProvider struct {
@@ -47,20 +46,294 @@ func (p sparkMetricsProvider) addClusterMetric(builder *metadata.MetricsBuilder,
 	for key, gauge := range m.Gauges {
 		appID, stripped := stripSparkMetricKey(key)
 		switch stripped {
-		case metricDiskSpaceUsed:
+		case "blockmanager.memory.diskspaceused":
 			builder.RecordDatabricksSparkBlockmanagerMemoryDiskspaceusedDataPoint(
 				ts,
 				int64(gauge.Value),
 				clusterID,
 				appID,
 			)
-		case metricMaxmem:
+		case "blockmanager.memory.maxmem":
 			builder.RecordDatabricksSparkBlockmanagerMemoryMaxmemDataPoint(
 				ts,
 				int64(gauge.Value),
 				clusterID,
 				appID,
 			)
+		case "blockmanager.memory.maxoffheapmem":
+			builder.RecordDatabricksSparkBlockmanagerMemoryMaxoffheapmemDataPoint(
+				ts,
+				int64(gauge.Value),
+				clusterID,
+				appID,
+			)
+		case "blockmanager.memory.maxonheapmem":
+			builder.RecordDatabricksSparkBlockmanagerMemoryMaxonheapmemDataPoint(
+				ts,
+				int64(gauge.Value),
+				clusterID,
+				appID,
+			)
+		case "blockmanager.memory.memused":
+			builder.RecordDatabricksSparkBlockmanagerMemoryMemusedDataPoint(
+				ts,
+				int64(gauge.Value),
+				clusterID,
+				appID,
+			)
+		case "blockmanager.memory.offheapmemused":
+			builder.RecordDatabricksSparkBlockmanagerMemoryOffheapmemusedDataPoint(
+				ts,
+				int64(gauge.Value),
+				clusterID,
+				appID,
+			)
+		case "blockmanager.memory.onheapmemused":
+			builder.RecordDatabricksSparkBlockmanagerMemoryOnheapmemusedDataPoint(
+				ts,
+				int64(gauge.Value),
+				clusterID,
+				appID,
+			)
+		case "blockmanager.memory.remainingmem":
+			builder.RecordDatabricksSparkBlockmanagerMemoryRemainingmemDataPoint(
+				ts,
+				int64(gauge.Value),
+				clusterID,
+				appID,
+			)
+		case "blockmanager.memory.remainingoffheapmem":
+			builder.RecordDatabricksSparkBlockmanagerMemoryRemainingoffheapmemDataPoint(
+				ts,
+				int64(gauge.Value),
+				clusterID,
+				appID,
+			)
+		case "blockmanager.memory.remainingonheapmem":
+			builder.RecordDatabricksSparkBlockmanagerMemoryRemainingonheapmemDataPoint(
+				ts,
+				int64(gauge.Value),
+				clusterID,
+				appID,
+			)
+		case "dagscheduler.job.activejobs":
+			builder.RecordDatabricksSparkDagschedulerJobActivejobsDataPoint(
+				ts,
+				int64(gauge.Value),
+				clusterID,
+				appID,
+			)
+		case "dagscheduler.job.alljobs":
+			builder.RecordDatabricksSparkDagschedulerJobAlljobsDataPoint(
+				ts,
+				int64(gauge.Value),
+				clusterID,
+				appID,
+			)
+		case "dagscheduler.stage.failedstages":
+			builder.RecordDatabricksSparkDagschedulerStageFailedstagesDataPoint(
+				ts,
+				int64(gauge.Value),
+				clusterID,
+				appID,
+			)
+		case "dagscheduler.stage.runningstages":
+			builder.RecordDatabricksSparkDagschedulerStageRunningstagesDataPoint(
+				ts,
+				int64(gauge.Value),
+				clusterID,
+				appID,
+			)
+		case "dagscheduler.stage.waitingstages":
+			builder.RecordDatabricksSparkDagschedulerStageWaitingstagesDataPoint(
+				ts,
+				int64(gauge.Value),
+				clusterID,
+				appID,
+			)
+		case "executormetrics.directpoolmemory":
+			builder.RecordDatabricksSparkExecutormetricsDirectpoolmemoryDataPoint(
+				ts,
+				int64(gauge.Value),
+				clusterID,
+				appID,
+			)
+		case "executormetrics.jvmheapmemory":
+			builder.RecordDatabricksSparkExecutormetricsJvmheapmemoryDataPoint(
+				ts,
+				int64(gauge.Value),
+				clusterID,
+				appID,
+			)
+		case "executormetrics.jvmoffheapmemory":
+			builder.RecordDatabricksSparkExecutormetricsJvmoffheapmemoryDataPoint(
+				ts,
+				int64(gauge.Value),
+				clusterID,
+				appID,
+			)
+		case "executormetrics.majorgccount":
+			builder.RecordDatabricksSparkExecutormetricsMajorgccountDataPoint(
+				ts,
+				int64(gauge.Value),
+				clusterID,
+				appID,
+			)
+		case "executormetrics.majorgctime":
+			builder.RecordDatabricksSparkExecutormetricsMajorgctimeDataPoint(
+				ts,
+				int64(gauge.Value),
+				clusterID,
+				appID,
+			)
+		case "executormetrics.mappedpoolmemory":
+			builder.RecordDatabricksSparkExecutormetricsMappedpoolmemoryDataPoint(
+				ts,
+				int64(gauge.Value),
+				clusterID,
+				appID,
+			)
+		case "executormetrics.minorgccount":
+			builder.RecordDatabricksSparkExecutormetricsMinorgccountDataPoint(
+				ts,
+				int64(gauge.Value),
+				clusterID,
+				appID,
+			)
+		case "executormetrics.minorgctime":
+			builder.RecordDatabricksSparkExecutormetricsMinorgctimeDataPoint(
+				ts,
+				int64(gauge.Value),
+				clusterID,
+				appID,
+			)
+		case "executormetrics.offheapexecutionmemory":
+			builder.RecordDatabricksSparkExecutormetricsOffheapexecutionmemoryDataPoint(
+				ts,
+				int64(gauge.Value),
+				clusterID,
+				appID,
+			)
+		case "executormetrics.offheapstoragememory":
+			builder.RecordDatabricksSparkExecutormetricsOffheapstoragememoryDataPoint(
+				ts,
+				int64(gauge.Value),
+				clusterID,
+				appID,
+			)
+		case "executormetrics.offheapunifiedmemory":
+			builder.RecordDatabricksSparkExecutormetricsOffheapunifiedmemoryDataPoint(
+				ts,
+				int64(gauge.Value),
+				clusterID,
+				appID,
+			)
+		case "executormetrics.onheapexecutionmemory":
+			builder.RecordDatabricksSparkExecutormetricsOnheapexecutionmemoryDataPoint(
+				ts,
+				int64(gauge.Value),
+				clusterID,
+				appID,
+			)
+		case "executormetrics.onheapstoragememory":
+			builder.RecordDatabricksSparkExecutormetricsOnheapstoragememoryDataPoint(
+				ts,
+				int64(gauge.Value),
+				clusterID,
+				appID,
+			)
+		case "executormetrics.onheapunifiedmemory":
+			builder.RecordDatabricksSparkExecutormetricsOnheapunifiedmemoryDataPoint(
+				ts,
+				int64(gauge.Value),
+				clusterID,
+				appID,
+			)
+		case "executormetrics.processtreejvmrssmemory":
+			builder.RecordDatabricksSparkExecutormetricsProcesstreejvmrssmemoryDataPoint(
+				ts,
+				int64(gauge.Value),
+				clusterID,
+				appID,
+			)
+		case "executormetrics.processtreejvmvmemory":
+			builder.RecordDatabricksSparkExecutormetricsProcesstreejvmvmemoryDataPoint(
+				ts,
+				int64(gauge.Value),
+				clusterID,
+				appID,
+			)
+		case "executormetrics.processtreeotherrssmemory":
+			builder.RecordDatabricksSparkExecutormetricsProcesstreeotherrssmemoryDataPoint(
+				ts,
+				int64(gauge.Value),
+				clusterID,
+				appID,
+			)
+		case "executormetrics.processtreeothervmemory":
+			builder.RecordDatabricksSparkExecutormetricsProcesstreeothervmemoryDataPoint(
+				ts,
+				int64(gauge.Value),
+				clusterID,
+				appID,
+			)
+		case "executormetrics.processtreepythonrssmemory":
+			builder.RecordDatabricksSparkExecutormetricsProcesstreepythonrssmemoryDataPoint(
+				ts,
+				int64(gauge.Value),
+				clusterID,
+				appID,
+			)
+		case "executormetrics.processtreepythonvmemory":
+			builder.RecordDatabricksSparkExecutormetricsProcesstreepythonvmemoryDataPoint(
+				ts,
+				int64(gauge.Value),
+				clusterID,
+				appID,
+			)
+		case "jvmcpu.jvmcputime":
+			builder.RecordDatabricksSparkJvmcpuJvmcputimeDataPoint(
+				ts,
+				int64(gauge.Value),
+				clusterID,
+				appID,
+			)
+		case "livelistenerbus.queue.appstatus.size":
+			builder.RecordDatabricksSparkLivelistenerbusQueueAppstatusSizeDataPoint(
+				ts,
+				int64(gauge.Value),
+				clusterID,
+				appID,
+			)
+		case "livelistenerbus.queue.executormanagement.size":
+			builder.RecordDatabricksSparkLivelistenerbusQueueExecutormanagementSizeDataPoint(
+				ts,
+				int64(gauge.Value),
+				clusterID,
+				appID,
+			)
+		case "livelistenerbus.queue.shared.size":
+			builder.RecordDatabricksSparkLivelistenerbusQueueSharedSizeDataPoint(
+				ts,
+				int64(gauge.Value),
+				clusterID,
+				appID,
+			)
+		case "livelistenerbus.queue.streams.size":
+			builder.RecordDatabricksSparkLivelistenerbusQueueStreamsSizeDataPoint(
+				ts,
+				int64(gauge.Value),
+				clusterID,
+				appID,
+			)
+		case "sparksqloperationmanager.numhiveoperations":
+			builder.RecordDatabricksSparkSparksqloperationmanagerNumhiveoperationsDataPoint(
+				ts,
+				int64(gauge.Value),
+				clusterID,
+				appID,
+			)
+
 		}
 	}
 }

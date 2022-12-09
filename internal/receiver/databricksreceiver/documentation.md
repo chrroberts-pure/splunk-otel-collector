@@ -14,6 +14,45 @@ These are the metrics available for this scraper.
 | **databricks.jobs.total** | A snapshot of the total number of jobs registered in the Databricks instance taken at each scrape | {jobs} | Gauge(Int) | <ul> </ul> |
 | **databricks.spark.blockmanager.memory.diskspaceused** | tbd | mb | Gauge(Int) | <ul> <li>cluster_id</li> <li>app_id</li> </ul> |
 | **databricks.spark.blockmanager.memory.maxmem** | tbd | mb | Gauge(Int) | <ul> <li>cluster_id</li> <li>app_id</li> </ul> |
+| **databricks.spark.blockmanager.memory.maxoffheapmem** | tbd | mb | Gauge(Int) | <ul> <li>cluster_id</li> <li>app_id</li> </ul> |
+| **databricks.spark.blockmanager.memory.maxonheapmem** | tbd | mb | Gauge(Int) | <ul> <li>cluster_id</li> <li>app_id</li> </ul> |
+| **databricks.spark.blockmanager.memory.memused** | tbd | mb | Gauge(Int) | <ul> <li>cluster_id</li> <li>app_id</li> </ul> |
+| **databricks.spark.blockmanager.memory.offheapmemused** | tbd | mb | Gauge(Int) | <ul> <li>cluster_id</li> <li>app_id</li> </ul> |
+| **databricks.spark.blockmanager.memory.onheapmemused** | tbd | mb | Gauge(Int) | <ul> <li>cluster_id</li> <li>app_id</li> </ul> |
+| **databricks.spark.blockmanager.memory.remainingmem** | tbd | mb | Gauge(Int) | <ul> <li>cluster_id</li> <li>app_id</li> </ul> |
+| **databricks.spark.blockmanager.memory.remainingoffheapmem** | tbd | mb | Gauge(Int) | <ul> <li>cluster_id</li> <li>app_id</li> </ul> |
+| **databricks.spark.blockmanager.memory.remainingonheapmem** | tbd | mb | Gauge(Int) | <ul> <li>cluster_id</li> <li>app_id</li> </ul> |
+| **databricks.spark.dagscheduler.job.activejobs** | tbd |  | Gauge(Int) | <ul> <li>cluster_id</li> <li>app_id</li> </ul> |
+| **databricks.spark.dagscheduler.job.alljobs** | tbd |  | Gauge(Int) | <ul> <li>cluster_id</li> <li>app_id</li> </ul> |
+| **databricks.spark.dagscheduler.stage.failedstages** | tbd |  | Gauge(Int) | <ul> <li>cluster_id</li> <li>app_id</li> </ul> |
+| **databricks.spark.dagscheduler.stage.runningstages** | tbd |  | Gauge(Int) | <ul> <li>cluster_id</li> <li>app_id</li> </ul> |
+| **databricks.spark.dagscheduler.stage.waitingstages** | tbd |  | Gauge(Int) | <ul> <li>cluster_id</li> <li>app_id</li> </ul> |
+| **databricks.spark.executormetrics.directpoolmemory** | tbd |  | Gauge(Int) | <ul> <li>cluster_id</li> <li>app_id</li> </ul> |
+| **databricks.spark.executormetrics.jvmheapmemory** | tbd |  | Gauge(Int) | <ul> <li>cluster_id</li> <li>app_id</li> </ul> |
+| **databricks.spark.executormetrics.jvmoffheapmemory** | tbd |  | Gauge(Int) | <ul> <li>cluster_id</li> <li>app_id</li> </ul> |
+| **databricks.spark.executormetrics.majorgccount** | tbd |  | Gauge(Int) | <ul> <li>cluster_id</li> <li>app_id</li> </ul> |
+| **databricks.spark.executormetrics.majorgctime** | tbd |  | Gauge(Int) | <ul> <li>cluster_id</li> <li>app_id</li> </ul> |
+| **databricks.spark.executormetrics.mappedpoolmemory** | tbd |  | Gauge(Int) | <ul> <li>cluster_id</li> <li>app_id</li> </ul> |
+| **databricks.spark.executormetrics.minorgccount** | tbd |  | Gauge(Int) | <ul> <li>cluster_id</li> <li>app_id</li> </ul> |
+| **databricks.spark.executormetrics.minorgctime** | tbd |  | Gauge(Int) | <ul> <li>cluster_id</li> <li>app_id</li> </ul> |
+| **databricks.spark.executormetrics.offheapexecutionmemory** | tbd |  | Gauge(Int) | <ul> <li>cluster_id</li> <li>app_id</li> </ul> |
+| **databricks.spark.executormetrics.offheapstoragememory** | tbd |  | Gauge(Int) | <ul> <li>cluster_id</li> <li>app_id</li> </ul> |
+| **databricks.spark.executormetrics.offheapunifiedmemory** | tbd |  | Gauge(Int) | <ul> <li>cluster_id</li> <li>app_id</li> </ul> |
+| **databricks.spark.executormetrics.onheapexecutionmemory** | tbd |  | Gauge(Int) | <ul> <li>cluster_id</li> <li>app_id</li> </ul> |
+| **databricks.spark.executormetrics.onheapstoragememory** | tbd |  | Gauge(Int) | <ul> <li>cluster_id</li> <li>app_id</li> </ul> |
+| **databricks.spark.executormetrics.onheapunifiedmemory** | tbd |  | Gauge(Int) | <ul> <li>cluster_id</li> <li>app_id</li> </ul> |
+| **databricks.spark.executormetrics.processtreejvmrssmemory** | tbd |  | Gauge(Int) | <ul> <li>cluster_id</li> <li>app_id</li> </ul> |
+| **databricks.spark.executormetrics.processtreejvmvmemory** | tbd |  | Gauge(Int) | <ul> <li>cluster_id</li> <li>app_id</li> </ul> |
+| **databricks.spark.executormetrics.processtreeotherrssmemory** | tbd |  | Gauge(Int) | <ul> <li>cluster_id</li> <li>app_id</li> </ul> |
+| **databricks.spark.executormetrics.processtreeothervmemory** | tbd |  | Gauge(Int) | <ul> <li>cluster_id</li> <li>app_id</li> </ul> |
+| **databricks.spark.executormetrics.processtreepythonrssmemory** | tbd |  | Gauge(Int) | <ul> <li>cluster_id</li> <li>app_id</li> </ul> |
+| **databricks.spark.executormetrics.processtreepythonvmemory** | tbd |  | Gauge(Int) | <ul> <li>cluster_id</li> <li>app_id</li> </ul> |
+| **databricks.spark.jvmcpu.jvmcputime** | tbd |  | Gauge(Int) | <ul> <li>cluster_id</li> <li>app_id</li> </ul> |
+| **databricks.spark.livelistenerbus.queue.appstatus.size** | tbd |  | Gauge(Int) | <ul> <li>cluster_id</li> <li>app_id</li> </ul> |
+| **databricks.spark.livelistenerbus.queue.executormanagement.size** | tbd |  | Gauge(Int) | <ul> <li>cluster_id</li> <li>app_id</li> </ul> |
+| **databricks.spark.livelistenerbus.queue.shared.size** | tbd |  | Gauge(Int) | <ul> <li>cluster_id</li> <li>app_id</li> </ul> |
+| **databricks.spark.livelistenerbus.queue.streams.size** | tbd |  | Gauge(Int) | <ul> <li>cluster_id</li> <li>app_id</li> </ul> |
+| **databricks.spark.sparksqloperationmanager.numhiveoperations** | tbd |  | Gauge(Int) | <ul> <li>cluster_id</li> <li>app_id</li> </ul> |
 | **databricks.tasks.run.duration** | The execution duration in milliseconds per completed task | ms | Gauge(Int) | <ul> <li>job_id</li> <li>task_id</li> </ul> |
 | **databricks.tasks.schedule.status** | A snapshot of the pause/run status per task taken at each scrape 0=PAUSED, 1=UNPAUSED, 2=NOT_SCHEDULED | {status} | Gauge(Int) | <ul> <li>job_id</li> <li>task_id</li> <li>task_type</li> </ul> |
 
